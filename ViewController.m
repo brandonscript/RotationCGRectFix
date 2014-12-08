@@ -40,24 +40,22 @@
         return;
     }
     
-    CGAffineTransform rotationTransform = CGAffineTransformRotate(_imageView.transform, rotation);
-    CGPoint center = _imageView.center;
-    _imageView.transform = CGAffineTransformConcat(_imageView.transform, rotationTransform);
+    CGAffineTransform rotationTransform = CGAffineTransformRotate(self.imageView.transform, rotation);
     gesture.rotation = 0.0f;
     
     if (gesture.state == UIGestureRecognizerStateChanged) {
-        CGFloat scale = 1.0;
+        CGFloat scale = sqrt(_imageView.transform.a * _imageView.transform.a + _imageView.transform.c * _imageView.transform.c);
         
         if ((currentRotation > 0 && rotation > 0) || (currentRotation < 0 && rotation < 0))
-            scale = 1 + fabs(scale * rotation);
+            scale = 1 + fabs(rotation);
         else if (currentRotation == 0)
             scale = 1;
         else
-            scale = 1 - fabs(scale * rotation);
-        NSLog(@"%0.4f", scale);
-
+            scale = 1 - fabs(rotation);
+        
         CGAffineTransform sizeTransform = CGAffineTransformMakeScale(scale, scale);
-        _imageView.transform = CGAffineTransformScale(_imageView.transform, scale, scale);
+        CGPoint center = _imageView.center;
+        _imageView.transform = CGAffineTransformConcat(rotationTransform, sizeTransform);
         _imageView.center = center;
     }
 }
